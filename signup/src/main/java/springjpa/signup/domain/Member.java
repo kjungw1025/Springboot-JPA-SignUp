@@ -12,6 +12,7 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
     private String name;
+    private String phone;
     private String email;
     @Column(length = 500)
     private String password;
