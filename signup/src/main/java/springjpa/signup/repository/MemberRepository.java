@@ -3,10 +3,12 @@ package springjpa.signup.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import springjpa.signup.domain.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -14,6 +16,7 @@ public class MemberRepository {
 
     @PersistenceContext
     private EntityManager em;
+    private PasswordEncoder passwordEncoder;
 
     public void save(Member member) {
         em.persist(member);
