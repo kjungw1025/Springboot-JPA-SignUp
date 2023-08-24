@@ -38,4 +38,18 @@ public class MemberRepository {
                 .getResultList();
         return result;
     }
+
+    public Optional<Member> login(String email, String password) throws Exception {
+        Member findMember = em.createQuery("select m from Member m where m.email = :email", Member.class)
+                .setParameter("email", email)
+                .getSingleResult();
+
+        // passwordEncoder를 이용한 암호 비교
+        if (passwordEncoder.matches(password, findMember.getPassword()) == true) {
+            return Optional.of(findMember);
+        }
+        else {
+            return Optional.empty();
+        }
+    }
 }

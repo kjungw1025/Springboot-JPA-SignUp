@@ -1,6 +1,8 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: header" />
+<head th:replace="fragments/header :: header">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
 <style>
     .fieldError {
     border-color: #bd2130;
@@ -29,10 +31,15 @@
         </div>
         <div class="form-group">
             <label th:for="email">이메일</label>
-            <input type="text" th:field="*{email}" class="form-control"
+            <input type="text" th:field="*{email}" class="form-control" id="email"
                    placeholder="이메일을 입력하세요"
                    th:class="${#fields.hasErrors('email')}? 'form-control fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Incorrect date</p>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="sendCode()">
+                이메일 본인 인증
+            </button>
         </div>
         <div class="form-group">
             <label th:for="password">비밀번호</label>
@@ -58,9 +65,37 @@
     </form>
     <br/>
     <div th:replace="fragments/footer :: footer" />
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5" id="staticBackdropLabel">이메일을 통해 받은 인증 코드를 입력해주세요.</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon3">인증 코드</span>
+                            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4">
+                        </div>
+                    </div>
+                    </br>
+                    <div style="visibility: hidden; color: red;" id="guide"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeCheckEmail()">닫기</button>
+                    <button type="button" class="btn btn-primary" onclick="checkEmail()">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div> <!-- /container -->
 </body>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
     function findAddr() {
         new daum.Postcode({
@@ -97,6 +132,59 @@
                 document.getElementById("detailAdr").focus();
             }
         }).open();
+    }
+
+    function sendCode() {
+        const userEmail = document.getElementById('email').value;
+        console.log(userEmail);
+
+        axios({
+            url: 'http://localhost:8080/mail',
+            method: 'post',
+            data: {
+                email: userEmail,
+            }
+        })
+        .then(res => {
+            console.log("해당 이메일에 인증 코드 보냄");
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    }
+
+    function checkEmail() {
+        const userCode = document.getElementById('basic-url').value;
+        console.log(userCode);
+
+        axios({
+            url: 'http://localhost:8080/verifyCode',
+            method: 'post',
+            data: {
+                code: userCode,
+            }
+        })
+        .then(res => {
+            console.log("이메일 인증 완료");
+            console.log(res.data);
+
+            if (res.data === 1) {
+                document.getElementById('guide').style.visibility = "visible";
+                document.getElementById('guide').innerHTML = "이메일 인증이 완료되었습니다."
+            }
+            else {
+                document.getElementById('guide').style.visibility = "visible";
+                document.getElementById('guide').innerHTML = "인증 코드를 다시 확인해주세요."
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    }
+
+    function closeCheckEmail() {
+        document.getElementById('basic-url').value = "";
+        document.getElementById('guide').style.visibility = "hidden";
     }
 </script>
 </html>
