@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import springjpa.signup.domain.Member;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,7 +15,7 @@ public class MemberRepository {
 
     @PersistenceContext
     private EntityManager em;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public void save(Member member) {
         em.persist(member);
@@ -39,17 +38,16 @@ public class MemberRepository {
         return result;
     }
 
-    public Optional<Member> login(String email, String password) throws Exception {
+    public Member login(String email, String password) {
         Member findMember = em.createQuery("select m from Member m where m.email = :email", Member.class)
                 .setParameter("email", email)
                 .getSingleResult();
-
         // passwordEncoder를 이용한 암호 비교
         if (passwordEncoder.matches(password, findMember.getPassword()) == true) {
-            return Optional.of(findMember);
+            return findMember;
         }
         else {
-            return Optional.empty();
+            return null;
         }
     }
 }

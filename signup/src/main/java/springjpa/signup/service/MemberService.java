@@ -41,4 +41,9 @@ public class MemberService {
     public List<Member> findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
+
+    @Transactional
+    public Member login(String email, String password) {
+        return memberRepository.login(email, password);
+    }
 }
