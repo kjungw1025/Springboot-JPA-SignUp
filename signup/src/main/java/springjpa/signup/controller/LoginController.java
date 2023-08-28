@@ -1,5 +1,9 @@
 package springjpa.signup.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +21,14 @@ import springjpa.signup.service.MemberService;
 public class LoginController {
     private final MemberService memberService;
 
-    @GetMapping("/members/login")
+    @GetMapping("/login")
     public String loginForm(Model model) {
         model.addAttribute("loginForm", new LoginForm());
         return "login/loginForm";
     }
 
-    @PostMapping("/members/login")
-    public String login(@Valid LoginForm form, BindingResult result) {
+    @PostMapping("/login")
+    public String login(@Valid LoginForm form, BindingResult result, HttpServletRequest request) {
         if (result.hasErrors()) {
             return "login/loginForm";
         }
@@ -36,7 +40,26 @@ public class LoginController {
             return "login/loginForm";
         }
 
-        // 로그인 성공 처리 TODO
+        // 로그인 성공 처리
+
+        // 세션이 있으면 있는 세션 반환, 없으면 신규 세션 생성
+        HttpSession session = request.getSession();
+        // 세션에 로그인 회원 정보 보관
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
+
         return "redirect:/";
     }
+
+//    Spring Security로 해결
+//    @PostMapping("/logout")
+//    public String logout(HttpServletRequest request) {
+//        // 세션을 삭제한다. (없애는게 목적이기 때문에 false로)
+//        HttpSession session = request.getSession(false);
+//        if (session != null) {
+//            // 세션이랑 그 안에 있는 데이터가 모두 삭제됨
+//            session.invalidate();
+//        }
+//
+//        return "redirect:/";
+//    }
 }
