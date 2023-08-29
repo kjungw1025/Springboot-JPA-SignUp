@@ -7,4 +7,4 @@
 - [x] 회원가입시, 회원이 입력한 이메일에 인증 코드를 전송/확인하는 이메일 인증 구현
 - [x] Servlet이 제공하는 HttpSession을 통해 로그인 상태 정보 유지하기
 - [x] Spring Security를 통해 로그아웃 기능 구현
-- [x] Servlet Filter를 사용하여 비로그인 유저의 페이지 접근 막기
+- [x] Spring Interceptor를 사용하여 비로그인 유저의 페이지 접근 막기
