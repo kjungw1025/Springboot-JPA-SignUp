@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import springjpa.signup.domain.Member;
 import springjpa.signup.service.MemberService;
 
@@ -28,7 +29,10 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid LoginForm form, BindingResult result, HttpServletRequest request) {
+    public String login(@Valid LoginForm form,
+                        BindingResult result,
+                        HttpServletRequest request,
+                        @RequestParam(defaultValue = "/") String redirectURL) {
         if (result.hasErrors()) {
             return "login/loginForm";
         }
@@ -47,7 +51,7 @@ public class LoginController {
         // 세션에 로그인 회원 정보 보관
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
 
-        return "redirect:/";
+        return "redirect:" + redirectURL;
     }
 
 //    Spring Security로 해결
